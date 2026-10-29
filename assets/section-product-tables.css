@@ -1,0 +1,170 @@
+.product-tables {
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  overflow-x: hidden;
+}
+
+[data-width="page"].product-tables {
+  max-width: 120rem;
+}
+
+[data-width="full"].product-tables {
+  max-width: none;
+}
+
+/* Tabs */
+.product-tables__tabs {
+  display: flex;
+  border-bottom: 1px solid rgba(var(--color-foreground, 0, 0, 0), 0.12);
+  margin-bottom: 1.6rem;
+}
+
+.product-tables__tab {
+  flex: 1;
+  text-align: center;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+  padding: 0 0 1rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(var(--color-foreground, 0, 0, 0), 0.55);
+  cursor: pointer;
+}
+
+.product-tables__tab.is-active {
+  color: rgb(var(--color-foreground, 0, 0, 0));
+  border-bottom-color: rgb(var(--color-foreground, 0, 0, 0));
+}
+
+/* Panels */
+.product-tables__panel[hidden] {
+  display: none;
+}
+
+/* Table */
+.product-tables__scroll {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.product-tables__table {
+  border-collapse: collapse;
+  border: 1px solid rgb(var(--color-foreground, 0, 0, 0));
+}
+
+.product-tables__table thead tr {
+  background: rgb(var(--color-foreground, 0, 0, 0));
+}
+
+.product-tables__table th {
+  color: rgb(var(--color-background, 255, 255, 255));
+  font-size: var(--product-tables-font-size, 1.2rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  text-align: left;
+  padding: var(--product-tables-cell-padding-v, 0.8rem) var(--product-tables-cell-padding-h, 1.2rem);
+  white-space: nowrap;
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.product-tables__table th:last-child {
+  border-right: none;
+}
+
+.product-tables__table td {
+  font-size: var(--product-tables-font-size, 1.2rem);
+  text-align: left;
+  padding: var(--product-tables-cell-padding-v, 0.8rem) var(--product-tables-cell-padding-h, 1.2rem);
+  white-space: nowrap;
+  border-right: 1px solid rgba(var(--color-foreground, 0, 0, 0), 0.08);
+  border-bottom: 1px solid rgba(var(--color-foreground, 0, 0, 0), 0.08);
+}
+
+.product-tables__table td:last-child {
+  border-right: none;
+}
+
+.product-tables__table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.product-tables__table td:first-child {
+  font-weight: 700;
+}
+
+.product-tables__table tbody tr:nth-child(even) {
+  background: rgba(var(--color-foreground, 0, 0, 0), 0.035);
+}
+
+.product-tables__footnote {
+  font-size: 1.1rem;
+  font-style: italic;
+  color: rgba(var(--color-foreground, 0, 0, 0), 0.6);
+  margin: 0.8rem 0 0;
+}
+
+/* Shaft/Grip groups (image below the table, everything centered) */
+.product-tables__group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 2.4rem;
+  width: 100%;
+}
+
+.product-tables__group + .product-tables__group {
+  margin-top: 2.4rem;
+  padding-top: 2.4rem;
+  border-top: 1px solid rgba(var(--color-foreground, 0, 0, 0), 0.12);
+}
+
+.product-tables__group-main {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.product-tables__group-media {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  text-align: center;
+}
+
+.product-tables__group-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 0 0 1.6rem;
+}
+
+.product-tables__group-image {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+  margin: 0 auto;
+}
+
+.product-tables__caption {
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(var(--color-foreground, 0, 0, 0), 0.65);
+  margin: 0.8rem 0 0;
+}
+
+/* Disclaimer */
+.product-tables__disclaimer {
+  font-size: 1.1rem;
+  font-style: italic;
+  color: rgba(var(--color-foreground, 0, 0, 0), 0.6);
+  margin-top: 1.6rem;
+}

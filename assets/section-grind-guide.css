@@ -1,0 +1,158 @@
+.grind-guide {
+  padding: 4rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.grind-guide__header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.grind-guide__heading {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0 0 0.5rem;
+  line-height: 1.2;
+}
+
+.grind-guide__subheading {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.grind-guide__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2.5rem;
+}
+
+@media screen and (max-width: 749px) {
+  .grind-guide__grid {
+    display: block;
+  }
+
+  .grind-guide__grid .grind-guide__card {
+    margin-bottom: 2.5rem;
+  }
+
+  .grind-guide__grid .grind-guide__card:last-child {
+    margin-bottom: 0;
+  }
+
+  .grind-guide__grid--carousel {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 1.25rem;
+    margin: 0 -1rem;
+    padding: 0 1rem 1rem;
+  }
+
+  .grind-guide__grid--carousel .grind-guide__card {
+    flex: 0 0 85%;
+    scroll-snap-align: start;
+    margin-bottom: 0;
+  }
+}
+
+.grind-guide__card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.grind-guide__image-wrap {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.grind-guide__image {
+  max-width: 100%;
+  height: auto;
+}
+
+.grind-guide__title {
+  font-size: 2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin: 0 0 0.25rem;
+}
+
+.grind-guide__subheader {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #666;
+  margin: 0 0 1rem;
+}
+
+.grind-guide__body {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.grind-guide__body p {
+  margin: 0 0 0.75rem;
+}
+
+.grind-guide__specs {
+  margin-bottom: 2rem;
+}
+
+.grind-guide__spec {
+  font-size: 0.9rem;
+  margin: 0.25rem 0;
+}
+
+.grind-guide__sliders {
+  background: #f5f4f0;
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: auto;
+}
+
+.grind-guide__slider-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+  margin: 0 0 0.6rem;
+}
+
+.grind-guide__slider-track {
+  position: relative;
+  height: 2px;
+  background: #ccc;
+  margin: 0 0.25rem;
+}
+
+.grind-guide__slider-marker {
+  position: absolute;
+  top: 50%;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 8px solid #000;
+  transform: translate(-50%, -100%);
+}
+
+.grind-guide__slider-endpoints {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-top: 0.5rem;
+  color: #333;
+}

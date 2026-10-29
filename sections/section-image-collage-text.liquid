@@ -1,0 +1,441 @@
+{%- liquid
+  assign id = 'ImageCollageText--' | append: section.id
+  assign selector_id = '#' | append: id
+  assign color_scheme = 'color-' | append: section.settings.color_scheme
+  assign section_width = section.settings.width
+
+  assign img_1 = section.settings.image_1
+  assign img_2 = section.settings.image_2
+  assign img_3 = section.settings.image_3
+
+  assign subheading = section.settings.subheading
+  assign heading = section.settings.heading
+  assign text = section.settings.text
+  assign heading_size = section.settings.heading_size | times: 0.01
+  assign text_size = section.settings.text_size | times: 0.01
+  assign image_gap = section.settings.image_gap
+  assign image_position = section.settings.image_position
+  assign image_width = section.settings.image_width
+
+  assign small_count = 0
+  if img_2 != blank
+    assign small_count = small_count | plus: 1
+  endif
+  if img_3 != blank
+    assign small_count = small_count | plus: 1
+  endif
+
+  assign columns = 'minmax(0, 1fr) minmax(0, 1fr)'
+  case image_width
+    when 'narrow'
+      assign columns = 'minmax(0, 4fr) minmax(0, 6fr)'
+    when 'wide'
+      assign columns = 'minmax(0, 6fr) minmax(0, 4fr)'
+  endcase
+
+  assign layout_class = 'collage--image-left'
+  if image_position == 'right'
+    assign layout_class = 'collage--image-right'
+    case image_width
+      when 'narrow'
+        assign columns = 'minmax(0, 6fr) minmax(0, 4fr)'
+      when 'wide'
+        assign columns = 'minmax(0, 4fr) minmax(0, 6fr)'
+    endcase
+  endif
+
+  assign has_content = false
+  if subheading != blank or heading != blank or text != blank
+    assign has_content = true
+  endif
+-%}
+
+{%- style -%}
+  {{ selector_id }} {
+    --PT: {{ section.settings.padding_top }}px;
+    --PB: {{ section.settings.padding_bottom }}px;
+    --collage-gap: {{ image_gap }}px;
+    --collage-cols: {{ columns }};
+    --adjust-heading: calc(var(--FONT-ADJUST-HEADING) * {{ heading_size }});
+    --collage-text-size: {{ text_size }};
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  {{ selector_id }} .collage {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: center;
+    gap: 32px;
+  }
+
+  {{ selector_id }} .collage__images {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--collage-gap);
+  }
+
+  {{ selector_id }} .collage__image {
+    position: relative;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.06);
+  }
+
+  {{ selector_id }} .collage__image img,
+  {{ selector_id }} .collage__image svg {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  {{ selector_id }} .collage__image--large {
+    grid-column: 1 / -1;
+    aspect-ratio: 7 / 5;
+  }
+
+  {{ selector_id }} .collage__image--small {
+    aspect-ratio: 23 / 20;
+  }
+
+  {{ selector_id }} .collage__image--small.collage__image--full {
+    grid-column: 1 / -1;
+    aspect-ratio: 7 / 4;
+  }
+
+  {{ selector_id }} .collage__content {
+    min-width: 0;
+  }
+
+  {{ selector_id }} .collage__subheading {
+    margin: 0 0 12px;
+    font-size: 1.25rem;
+    font-weight: 400;
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+    text-transform: none;
+    color: var(--text);
+    opacity: 0.5;
+  }
+
+  {{ selector_id }} .collage__heading {
+    margin: 0 0 20px;
+    line-height: 0.95;
+  }
+
+  {{ selector_id }} .collage__heading p {
+    margin: 0;
+  }
+
+  {{ selector_id }} .collage__heading--uppercase {
+    text-transform: uppercase;
+  }
+
+  {{ selector_id }} .collage__text {
+    font-size: calc(1rem * var(--collage-text-size));
+    line-height: 1.6;
+  }
+
+  {{ selector_id }} .collage__text p {
+    margin: 0 0 1em;
+  }
+
+  {{ selector_id }} .collage__text p:last-child {
+    margin-bottom: 0;
+  }
+
+  @media screen and (min-width: 768px) {
+    {{ selector_id }} .collage {
+      grid-template-columns: var(--collage-cols);
+      gap: 0;
+    }
+
+    {{ selector_id }} .collage--image-right .collage__images {
+      order: 2;
+    }
+
+    {{ selector_id }} .collage__image--large {
+      aspect-ratio: 16 / 9;
+    }
+
+    {{ selector_id }} .collage__image--small {
+      aspect-ratio: 5 / 4;
+    }
+
+    {{ selector_id }} .collage__image--small.collage__image--full {
+      aspect-ratio: 16 / 9;
+    }
+
+    {{ selector_id }} .collage--image-left .collage__content {
+      padding-left: clamp(40px, 7vw, 100px);
+      padding-right: 20px;
+    }
+
+    {{ selector_id }} .collage--image-right .collage__content {
+      padding-right: clamp(40px, 7vw, 100px);
+      padding-left: 20px;
+    }
+
+    {{ selector_id }} .collage__content-inner {
+      max-width: 520px;
+    }
+
+    {{ selector_id }} .collage__subheading {
+      font-size: 1.5rem;
+      margin-bottom: 14px;
+    }
+
+    {{ selector_id }} .collage__heading {
+      margin-bottom: 26px;
+    }
+  }
+{%- endstyle -%}
+
+<section
+  id="{{ id }}"
+  class="section-padding image-collage-text {{ color_scheme }}"
+  data-section-id="{{ section.id }}"
+  data-section-type="image-collage-text"
+>
+  <div class="{{ section_width }}">
+    <div class="collage {{ layout_class }}">
+      <div class="collage__images">
+        <div class="collage__image collage__image--large">
+          {%- if img_1 != blank -%}
+            {{
+              img_1
+              | image_url: width: 1600
+              | image_tag:
+                widths: '600, 900, 1200, 1600',
+                sizes: '(min-width: 768px) 50vw, 100vw',
+                loading: 'lazy',
+                alt: img_1.alt
+            }}
+          {%- else -%}
+            {{ 'lifestyle-1' | placeholder_svg_tag }}
+          {%- endif -%}
+        </div>
+
+        {%- if img_2 != blank -%}
+          <div class="collage__image collage__image--small{% if small_count == 1 %} collage__image--full{% endif %}">
+            {{
+              img_2
+              | image_url: width: 1200
+              | image_tag:
+                widths: '400, 600, 900, 1200',
+                sizes: '(min-width: 768px) 25vw, 50vw',
+                loading: 'lazy',
+                alt: img_2.alt
+            }}
+          </div>
+        {%- endif -%}
+
+        {%- if img_3 != blank -%}
+          <div class="collage__image collage__image--small{% if small_count == 1 %} collage__image--full{% endif %}">
+            {{
+              img_3
+              | image_url: width: 1200
+              | image_tag:
+                widths: '400, 600, 900, 1200',
+                sizes: '(min-width: 768px) 25vw, 50vw',
+                loading: 'lazy',
+                alt: img_3.alt
+            }}
+          </div>
+        {%- endif -%}
+      </div>
+
+      {%- if has_content -%}
+        <div class="collage__content">
+          <div class="collage__content-inner">
+            {%- if subheading != blank -%}
+              <p class="collage__subheading h3">{{ subheading }}</p>
+            {%- endif -%}
+
+            {%- if heading != blank -%}
+              <div class="collage__heading h2{% if section.settings.heading_uppercase %} collage__heading--uppercase{% endif %}">
+                {{ heading }}
+              </div>
+            {%- endif -%}
+
+            {%- if text != blank -%}
+              <div class="collage__text rte">
+                {{ text }}
+              </div>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Image collage with text",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Images"
+    },
+    {
+      "type": "paragraph",
+      "content": "Image 1 is the large image on top. Images 2 and 3 sit side by side underneath. Add up to 3 images."
+    },
+    {
+      "type": "image_picker",
+      "id": "image_1",
+      "label": "Image 1 (large)"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_2",
+      "label": "Image 2"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_3",
+      "label": "Image 3"
+    },
+    {
+      "type": "range",
+      "id": "image_gap",
+      "label": "Space between images",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image position (desktop)",
+      "default": "left",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "image_width",
+      "label": "Image width (desktop)",
+      "default": "standard",
+      "info": "On mobile the images always stack above the text.",
+      "options": [
+        { "value": "narrow", "label": "Narrow (40%)" },
+        { "value": "standard", "label": "Standard (50%)" },
+        { "value": "wide", "label": "Wide (60%)" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Text"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "01"
+    },
+    {
+      "type": "richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "<p>Precision engineered.</p>"
+    },
+    {
+      "type": "checkbox",
+      "id": "heading_uppercase",
+      "label": "Uppercase heading",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size",
+      "min": 75,
+      "max": 200,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Use this space to tell the story behind the product.</p>"
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "label": "Text size",
+      "min": 75,
+      "max": 150,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Section spacing"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "default": "wrapper--full-padded",
+      "options": [
+        { "value": "wrapper--full-padded", "label": "Full width padded" },
+        { "value": "wrapper", "label": "Page width" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image collage with text",
+      "category": "Image"
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "aside", "footer"]
+  }
+}
+{% endschema %}

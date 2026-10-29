@@ -1,0 +1,373 @@
+{{ 'section-product-tables.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign ns = 'custom'
+
+  comment
+    Each tab label doubles as the metafield lookup: "Driver Spec Table" -> custom.driver_spec_table.
+    If no metafield matches the typed label, fall back to the standard keys below.
+    The text shown on each tab button comes from the separate "tab text" settings.
+  endcomment
+
+  assign specs_name = section.settings.specs_label | default: 'Specs' | handleize | replace: '-', '_'
+  assign specs_keys = specs_name | append: ',spec_table,driver_spec_table,fairway_wood_spec_table,hybrid_spec_table' | split: ','
+
+  assign shafts_name = section.settings.shafts_label | default: 'Shafts' | handleize | replace: '-', '_'
+  assign shafts_keys = shafts_name | append: ',shaft_table,woods_shaft_table' | split: ','
+
+  assign grip_name = section.settings.grip_label | default: 'Grip' | handleize | replace: '-', '_'
+  assign grip_keys = grip_name | append: ',grip_table' | split: ','
+
+  assign specs_mf = nil
+  assign specs_single = false
+  for raw_key in specs_keys
+    assign key_name = raw_key | strip
+    if key_name == blank
+      continue
+    endif
+    assign candidate = product.metafields[ns][key_name].value
+    if candidate == blank
+      continue
+    endif
+    if candidate.rows != blank
+      if candidate.rows.value.size > 0
+        assign specs_mf = candidate
+        assign specs_single = true
+        break
+      endif
+    elsif candidate.size > 0
+      assign specs_mf = candidate
+      break
+    endif
+  endfor
+
+  assign shafts_mf = nil
+  assign shafts_single = false
+  for raw_key in shafts_keys
+    assign key_name = raw_key | strip
+    if key_name == blank
+      continue
+    endif
+    assign candidate = product.metafields[ns][key_name].value
+    if candidate == blank
+      continue
+    endif
+    if candidate.rows != blank
+      if candidate.rows.value.size > 0
+        assign shafts_mf = candidate
+        assign shafts_single = true
+        break
+      endif
+    elsif candidate.size > 0
+      assign shafts_mf = candidate
+      break
+    endif
+  endfor
+
+  assign grip_mf = nil
+  assign grip_single = false
+  for raw_key in grip_keys
+    assign key_name = raw_key | strip
+    if key_name == blank
+      continue
+    endif
+    assign candidate = product.metafields[ns][key_name].value
+    if candidate == blank
+      continue
+    endif
+    if candidate.rows != blank
+      if candidate.rows.value.size > 0
+        assign grip_mf = candidate
+        assign grip_single = true
+        break
+      endif
+    elsif candidate.size > 0
+      assign grip_mf = candidate
+      break
+    endif
+  endfor
+
+  assign has_specs = false
+  if specs_mf != blank
+    assign has_specs = true
+  endif
+
+  assign has_shafts = false
+  if shafts_mf != blank
+    assign has_shafts = true
+  endif
+
+  assign has_grips = false
+  if grip_mf != blank
+    assign has_grips = true
+  endif
+
+  assign first_tab = ''
+  if has_specs
+    assign first_tab = 'specs'
+  elsif has_shafts
+    assign first_tab = 'shafts'
+  elsif has_grips
+    assign first_tab = 'grip'
+  endif
+-%}
+
+{%- if has_specs or has_shafts or has_grips -%}
+<div
+  class="product-tables"
+  id="product-tables-{{ section.id }}"
+  data-width="{{ section.settings.width }}"
+  style="
+    --product-tables-font-size: {{ section.settings.table_font_size }}px;
+    --product-tables-cell-padding-v: {{ section.settings.cell_padding_v }}px;
+    --product-tables-cell-padding-h: {{ section.settings.cell_padding_h }}px;
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="product-tables__tabs" role="tablist">
+    {%- if has_specs -%}
+      <button
+        type="button"
+        class="product-tables__tab{% if first_tab == 'specs' %} is-active{% endif %}"
+        data-tab-target="specs"
+        role="tab"
+        aria-selected="{% if first_tab == 'specs' %}true{% else %}false{% endif %}"
+      >{{ section.settings.specs_tab_text | default: 'Specs' }}</button>
+    {%- endif -%}
+    {%- if has_shafts -%}
+      <button
+        type="button"
+        class="product-tables__tab{% if first_tab == 'shafts' %} is-active{% endif %}"
+        data-tab-target="shafts"
+        role="tab"
+        aria-selected="{% if first_tab == 'shafts' %}true{% else %}false{% endif %}"
+      >{{ section.settings.shafts_tab_text | default: 'Shafts' }}</button>
+    {%- endif -%}
+    {%- if has_grips -%}
+      <button
+        type="button"
+        class="product-tables__tab{% if first_tab == 'grip' %} is-active{% endif %}"
+        data-tab-target="grip"
+        role="tab"
+        aria-selected="{% if first_tab == 'grip' %}true{% else %}false{% endif %}"
+      >{{ section.settings.grip_tab_text | default: 'Grip' }}</button>
+    {%- endif -%}
+  </div>
+
+  {%- if has_specs -%}
+    <div class="product-tables__panel" data-tab-panel="specs" {% unless first_tab == 'specs' %}hidden{% endunless %}>
+      {%- if specs_single -%}
+        {%- render 'product-tables-group', group: specs_mf, kind: 'specs', wrap: false, show_title: false -%}
+      {%- else -%}
+        {%- for group in specs_mf -%}
+          {%- render 'product-tables-group', group: group, kind: 'specs', wrap: true, show_title: true -%}
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  {%- if has_shafts -%}
+    <div class="product-tables__panel" data-tab-panel="shafts" {% unless first_tab == 'shafts' %}hidden{% endunless %}>
+      {%- if shafts_single -%}
+        {%- render 'product-tables-group', group: shafts_mf, kind: 'shafts', wrap: true, show_title: true -%}
+      {%- else -%}
+        {%- for group in shafts_mf -%}
+          {%- render 'product-tables-group', group: group, kind: 'shafts', wrap: true, show_title: true -%}
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  {%- if has_grips -%}
+    <div class="product-tables__panel" data-tab-panel="grip" {% unless first_tab == 'grip' %}hidden{% endunless %}>
+      {%- if grip_single -%}
+        {%- render 'product-tables-group', group: grip_mf, kind: 'grip', wrap: true, show_title: true -%}
+      {%- else -%}
+        {%- for group in grip_mf -%}
+          {%- render 'product-tables-group', group: group, kind: 'grip', wrap: true, show_title: true -%}
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  {%- if section.settings.disclaimer != blank -%}
+    <p class="product-tables__disclaimer">{{ section.settings.disclaimer }}</p>
+  {%- endif -%}
+</div>
+
+<script>
+  (function() {
+    var root = document.getElementById('product-tables-{{ section.id }}');
+    if (!root) return;
+    var tabs = Array.prototype.slice.call(root.querySelectorAll('[data-tab-target]'));
+    var panels = Array.prototype.slice.call(root.querySelectorAll('[data-tab-panel]'));
+    if (tabs.length < 2) return;
+
+    tabs.forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        var target = tab.getAttribute('data-tab-target');
+        tabs.forEach(function(t) {
+          var active = t === tab;
+          t.classList.toggle('is-active', active);
+          t.setAttribute('aria-selected', active ? 'true' : 'false');
+        });
+        panels.forEach(function(p) {
+          p.hidden = p.getAttribute('data-tab-panel') !== target;
+        });
+      });
+    });
+  })();
+</script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Product Spec Tables",
+  "tag": "section",
+  "class": "product-tables-section",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Reads table metaobjects from this product's metafields. For each tab, type the metafield's name in the label (e.g. Driver Spec Table). If the product has a value for it, the tab appears and the columns fill in automatically. The tab text is what shoppers see on the tab button. No table content is entered here."
+    },
+    {
+      "type": "header",
+      "content": "Specs tab"
+    },
+    {
+      "type": "text",
+      "id": "specs_tab_text",
+      "label": "Specs tab text",
+      "info": "The text shown on the tab button.",
+      "default": "Specs"
+    },
+    {
+      "type": "text",
+      "id": "specs_label",
+      "label": "Specs tab label",
+      "info": "Metafield name used to find the data, e.g. Driver Spec Table. Leave as Specs for the standard iron Spec Table.",
+      "default": "Specs"
+    },
+    {
+      "type": "header",
+      "content": "Shafts tab"
+    },
+    {
+      "type": "text",
+      "id": "shafts_tab_text",
+      "label": "Shafts tab text",
+      "info": "The text shown on the tab button.",
+      "default": "Shafts"
+    },
+    {
+      "type": "text",
+      "id": "shafts_label",
+      "label": "Shafts tab label",
+      "info": "Metafield name used to find the data, e.g. Woods Shaft Table. Leave as Shafts for the standard Shaft Table.",
+      "default": "Shafts"
+    },
+    {
+      "type": "header",
+      "content": "Grip tab"
+    },
+    {
+      "type": "text",
+      "id": "grip_tab_text",
+      "label": "Grip tab text",
+      "info": "The text shown on the tab button.",
+      "default": "Grip"
+    },
+    {
+      "type": "text",
+      "id": "grip_label",
+      "label": "Grip tab label",
+      "info": "Metafield name used to find the data, e.g. Grip Table.",
+      "default": "Grip"
+    },
+    {
+      "type": "header",
+      "content": "Footer note"
+    },
+    {
+      "type": "text",
+      "id": "disclaimer",
+      "label": "Disclaimer",
+      "info": "Optional note shown below the tables, e.g. \"*ZXi7 3 Iron Offered Custom Only\". Leave blank to omit."
+    },
+    {
+      "type": "header",
+      "content": "Table size"
+    },
+    {
+      "type": "range",
+      "id": "table_font_size",
+      "label": "Table font size",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "cell_padding_v",
+      "label": "Cell padding (vertical)",
+      "min": 4,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "cell_padding_h",
+      "label": "Cell padding (horizontal)",
+      "min": 6,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Section spacing"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "options": [
+        { "value": "page", "label": "Page width" },
+        { "value": "full", "label": "Full width" }
+      ],
+      "default": "page"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Spec Tables"
+    }
+  ]
+}
+{% endschema %}

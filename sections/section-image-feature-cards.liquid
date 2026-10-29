@@ -1,0 +1,678 @@
+{%- liquid
+  assign id = 'ImageFeatureCards--' | append: section.id
+  assign selector_id = '#' | append: id
+  assign color_scheme = 'color-' | append: section.settings.color_scheme
+  assign section_width = section.settings.width
+  assign columns = section.settings.columns | plus: 0
+  assign columns_tablet = columns | at_most: 2
+  assign mobile_layout = section.settings.mobile_layout
+  assign image_ratio = section.settings.image_ratio
+  assign card_gap = section.settings.card_gap
+  assign card_padding = section.settings.card_padding
+  assign card_radius = section.settings.card_radius
+  assign heading_size = section.settings.heading_size | times: 0.01
+  assign text_size = section.settings.text_size | times: 0.01
+  assign card_bg = section.settings.card_bg_color
+  assign card_text = section.settings.card_text_color
+  assign card_border = section.settings.card_border_color
+
+  assign heading_color = card_text
+  if section.settings.heading_color != blank and section.settings.heading_color.alpha != 0.0
+    assign heading_color = section.settings.heading_color
+  endif
+  assign body_color = card_text
+  if section.settings.body_text_color != blank and section.settings.body_text_color.alpha != 0.0
+    assign body_color = section.settings.body_text_color
+  endif
+  assign cta_color = card_text
+  if section.settings.cta_color != blank and section.settings.cta_color.alpha != 0.0
+    assign cta_color = section.settings.cta_color
+  endif
+  assign subheading_color = section.settings.subheading_color
+  assign label_color = section.settings.label_color
+  assign desktop_vw = 100 | divided_by: columns
+  capture card_sizes
+    echo '(min-width: 1024px) ' | append: desktop_vw | append: 'vw, (min-width: 768px) 50vw, 85vw'
+  endcapture
+
+  assign ratio_css = '4 / 3'
+  case image_ratio
+    when 'landscape'
+      assign ratio_css = '4 / 3'
+    when 'wide'
+      assign ratio_css = '16 / 9'
+    when 'square'
+      assign ratio_css = '1 / 1'
+    when 'portrait'
+      assign ratio_css = '3 / 4'
+  endcase
+-%}
+
+{%- style -%}
+  {{ selector_id }} {
+    --PT: {{ section.settings.padding_top }}px;
+    --PB: {{ section.settings.padding_bottom }}px;
+    --cards-gap: {{ card_gap }}px;
+    --cards-columns: {{ columns }};
+    --cards-columns-tablet: {{ columns_tablet }};
+    --card-padding: {{ card_padding }}px;
+    --card-radius: {{ card_radius }}px;
+    --card-image-ratio: {{ ratio_css }};
+    --card-heading-size: {{ heading_size }};
+    --card-text-size: {{ text_size }};
+    --card-bg: {{ card_bg }};
+    --card-text: {{ card_text }};
+    --card-border: {{ card_border }};
+    --card-heading-color: {{ heading_color }};
+    --card-subheading-color: {{ subheading_color }};
+    --card-body-color: {{ body_color }};
+    --card-label-color: {{ label_color }};
+    --card-cta-color: {{ cta_color }};
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  {{ selector_id }} .feature-cards__list {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--cards-gap);
+    align-items: stretch;
+  }
+
+  {{ selector_id }} .feature-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+    background: var(--card-bg);
+    color: var(--card-text);
+    border: 1px solid var(--card-border);
+    border-radius: var(--card-radius);
+  }
+
+  {{ selector_id }} .feature-card__image {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: var(--card-image-ratio);
+    background: rgba(0, 0, 0, 0.06);
+  }
+
+  {{ selector_id }} .feature-card__image img,
+  {{ selector_id }} .feature-card__image svg {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  {{ selector_id }} .feature-card__badges {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    right: 16px;
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 8px;
+    pointer-events: none;
+  }
+
+  {{ selector_id }} .feature-card__badges--stacked {
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
+
+  {{ selector_id }} .feature-card__badges--split {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+  }
+
+  {{ selector_id }} .feature-card__badge {
+    display: inline-block;
+    padding: 8px 12px;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  {{ selector_id }} .feature-card__content {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    padding: var(--card-padding);
+  }
+
+  {{ selector_id }} .feature-card__heading {
+    margin: 0 0 14px;
+    font-size: calc(0.8125rem * var(--card-heading-size));
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: 0.14em;
+    text-transform: none;
+    color: var(--card-heading-color);
+  }
+
+  {{ selector_id }} .feature-card__heading--with-sub {
+    margin-bottom: 8px;
+  }
+
+  {{ selector_id }} .feature-card__subheading {
+    margin: 0 0 14px;
+    font-size: calc(0.6875rem * var(--card-heading-size));
+    font-weight: 400;
+    line-height: 1.4;
+    letter-spacing: 0.14em;
+    text-transform: none;
+    color: var(--card-subheading-color);
+  }
+
+  {{ selector_id }} .feature-card__text {
+    font-size: calc(0.875rem * var(--card-text-size));
+    line-height: 1.7;
+    color: var(--card-body-color);
+  }
+
+  {{ selector_id }} .feature-card__text--has-footer {
+    flex: 1 1 auto;
+    margin-bottom: 24px;
+  }
+
+  {{ selector_id }} .feature-card__text p {
+    margin: 0 0 1em;
+  }
+
+  {{ selector_id }} .feature-card__text p:last-child {
+    margin-bottom: 0;
+  }
+
+  {{ selector_id }} .feature-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: auto;
+    padding-top: 14px;
+    border-top: 1px solid var(--card-border);
+  }
+
+  {{ selector_id }} .feature-card__label {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    line-height: 1.3;
+    color: var(--card-label-color);
+  }
+
+  {{ selector_id }} .feature-card__cta {
+    margin-left: auto;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1.3;
+    white-space: nowrap;
+    text-decoration: none;
+    color: var(--card-cta-color);
+  }
+
+  {{ selector_id }} a.feature-card__cta:hover {
+    text-decoration: underline;
+  }
+
+  {% if mobile_layout == 'slider' %}
+    @media screen and (max-width: 767px) {
+      {{ selector_id }} .feature-cards__list {
+        grid-template-columns: none;
+        grid-auto-flow: column;
+        grid-auto-columns: 85%;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+
+      {{ selector_id }} .feature-cards__list::-webkit-scrollbar {
+        display: none;
+      }
+
+      {{ selector_id }} .feature-card {
+        scroll-snap-align: start;
+      }
+    }
+  {% endif %}
+
+  @media screen and (min-width: 768px) {
+    {{ selector_id }} .feature-cards__list {
+      grid-template-columns: repeat(var(--cards-columns-tablet), minmax(0, 1fr));
+    }
+  }
+
+  @media screen and (min-width: 1024px) {
+    {{ selector_id }} .feature-cards__list {
+      grid-template-columns: repeat(var(--cards-columns), minmax(0, 1fr));
+    }
+  }
+{%- endstyle -%}
+
+<section
+  id="{{ id }}"
+  class="section-padding image-feature-cards {{ color_scheme }}"
+  data-section-id="{{ section.id }}"
+  data-section-type="image-feature-cards"
+>
+  <div class="{{ section_width }}">
+    {%- if section.blocks.size > 0 -%}
+      <div class="feature-cards__list">
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign card_image = block.settings.image
+            assign card_heading = block.settings.heading
+            assign card_text_content = block.settings.text
+            assign badge_text = block.settings.badge_text
+            assign badge_2_text = block.settings.badge_2_text
+            assign badge_layout = block.settings.badge_layout | default: 'row'
+            assign card_subheading = block.settings.subheading
+            assign label_text = block.settings.footer_label
+            assign cta_text = block.settings.cta_text
+            assign cta_link = block.settings.cta_link
+
+            assign has_badges = false
+            if badge_text != blank or badge_2_text != blank
+              assign has_badges = true
+            endif
+
+            assign has_footer = false
+            if label_text != blank or cta_text != blank
+              assign has_footer = true
+            endif
+          -%}
+          <div class="feature-card" {{ block.shopify_attributes }}>
+            <div class="feature-card__image">
+              {%- if has_badges -%}
+                <div class="feature-card__badges feature-card__badges--{{ badge_layout }}">
+                  {%- if badge_text != blank -%}
+                    <span class="feature-card__badge" style="background: {{ block.settings.badge_bg_color }}; color: {{ block.settings.badge_text_color }};">{{ badge_text | escape }}</span>
+                  {%- endif -%}
+                  {%- if badge_2_text != blank -%}
+                    <span class="feature-card__badge feature-card__badge--second" style="background: {{ block.settings.badge_2_bg_color }}; color: {{ block.settings.badge_2_text_color }};">{{ badge_2_text | escape }}</span>
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
+
+              {%- if card_image != blank -%}
+                {{
+                  card_image
+                  | image_url: width: 1200
+                  | image_tag:
+                    widths: '400, 600, 800, 1000, 1200',
+                    sizes: card_sizes,
+                    loading: 'lazy',
+                    alt: card_image.alt
+                }}
+              {%- else -%}
+                {{ 'lifestyle-1' | placeholder_svg_tag }}
+              {%- endif -%}
+            </div>
+
+            {%- if card_heading != blank or card_subheading != blank or card_text_content != blank or has_footer -%}
+              <div class="feature-card__content">
+                {%- if card_heading != blank -%}
+                  <h3 class="feature-card__heading h6{% if card_subheading != blank %} feature-card__heading--with-sub{% endif %}">{{ card_heading | escape }}</h3>
+                {%- endif -%}
+
+                {%- if card_subheading != blank -%}
+                  <p class="feature-card__subheading">{{ card_subheading | escape }}</p>
+                {%- endif -%}
+
+                {%- if card_text_content != blank -%}
+                  <div class="feature-card__text rte{% if has_footer %} feature-card__text--has-footer{% endif %}">{{ card_text_content }}</div>
+                {%- endif -%}
+
+                {%- if has_footer -%}
+                  <div class="feature-card__footer">
+                    {%- if label_text != blank -%}
+                      <span class="feature-card__label">{{ label_text | escape }}</span>
+                    {%- endif -%}
+
+                    {%- if cta_text != blank -%}
+                      {%- if cta_link != blank -%}
+                        <a class="feature-card__cta" href="{{ cta_link }}">{{ cta_text | escape }} <span aria-hidden="true">&rarr;</span></a>
+                      {%- else -%}
+                        <span class="feature-card__cta">{{ cta_text | escape }} <span aria-hidden="true">&rarr;</span></span>
+                      {%- endif -%}
+                    {%- endif -%}
+                  </div>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- else -%}
+      {%- render 'no-blocks' -%}
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Image feature cards",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "Cards per row on desktop",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3,
+      "info": "Tablet shows 2 per row."
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Mobile layout",
+      "default": "stacked",
+      "options": [
+        { "value": "stacked", "label": "Stacked" },
+        { "value": "slider", "label": "Swipe slider" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "label": "Space between cards",
+      "min": 8,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Cards"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image shape",
+      "default": "landscape",
+      "options": [
+        { "value": "landscape", "label": "Landscape (4:3)" },
+        { "value": "wide", "label": "Wide (16:9)" },
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "portrait", "label": "Portrait (3:4)" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "card_padding",
+      "label": "Text padding",
+      "min": 12,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 22
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size",
+      "min": 75,
+      "max": 200,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "label": "Text size",
+      "min": 75,
+      "max": 150,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Section color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "color",
+      "id": "card_bg_color",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_text_color",
+      "label": "Card text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "card_border_color",
+      "label": "Card border",
+      "default": "#e3e3e3"
+    },
+    {
+      "type": "header",
+      "content": "Card text colors"
+    },
+    {
+      "type": "paragraph",
+      "content": "Leave a color empty to use the Card text color above."
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading"
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Subheading",
+      "default": "#d62f3a"
+    },
+    {
+      "type": "color",
+      "id": "body_text_color",
+      "label": "Body text"
+    },
+    {
+      "type": "color",
+      "id": "label_color",
+      "label": "Footer label (bottom left)",
+      "default": "#8a8a8a"
+    },
+    {
+      "type": "color",
+      "id": "cta_color",
+      "label": "Call to action link"
+    },
+    {
+      "type": "header",
+      "content": "Section spacing"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "default": "wrapper--full-padded",
+      "options": [
+        { "value": "wrapper--full-padded", "label": "Full width padded" },
+        { "value": "wrapper", "label": "Page width" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "header",
+          "content": "Badge 1"
+        },
+        {
+          "type": "text",
+          "id": "badge_text",
+          "label": "Badge text",
+          "info": "Shows in the top left of the image. Leave empty for no badge."
+        },
+        {
+          "type": "color",
+          "id": "badge_bg_color",
+          "label": "Badge color",
+          "default": "#d62f3a"
+        },
+        {
+          "type": "color",
+          "id": "badge_text_color",
+          "label": "Badge text color",
+          "default": "#ffffff"
+        },
+        {
+          "type": "header",
+          "content": "Badge 2"
+        },
+        {
+          "type": "text",
+          "id": "badge_2_text",
+          "label": "Second badge text",
+          "info": "Optional. Leave empty to show only one badge."
+        },
+        {
+          "type": "color",
+          "id": "badge_2_bg_color",
+          "label": "Second badge color",
+          "default": "#000000"
+        },
+        {
+          "type": "color",
+          "id": "badge_2_text_color",
+          "label": "Second badge text color",
+          "default": "#ffffff"
+        },
+        {
+          "type": "select",
+          "id": "badge_layout",
+          "label": "Badge arrangement",
+          "info": "How the two badges sit on the image.",
+          "default": "row",
+          "options": [
+            { "value": "row", "label": "Side by side (top left)" },
+            { "value": "stacked", "label": "Stacked (top left)" },
+            { "value": "split", "label": "Split (one left, one right)" }
+          ]
+        },
+        {
+          "type": "header",
+          "content": "Text"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Card heading"
+        },
+        {
+          "type": "text",
+          "id": "subheading",
+          "label": "Subheading",
+          "info": "Optional line under the heading, e.g. a tagline."
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "<p>Use this space to describe the feature or product detail.</p>"
+        },
+        {
+          "type": "header",
+          "content": "Footer"
+        },
+        {
+          "type": "text",
+          "id": "footer_label",
+          "label": "Footer label",
+          "info": "Small text on the bottom left, e.g. a category."
+        },
+        {
+          "type": "text",
+          "id": "cta_text",
+          "label": "Call to action text",
+          "info": "e.g. Shop Now. Leave empty for no link."
+        },
+        {
+          "type": "url",
+          "id": "cta_link",
+          "label": "Call to action link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image feature cards",
+      "category": "Image",
+      "blocks": [
+        { "type": "card" },
+        { "type": "card" },
+        { "type": "card" }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "aside", "footer"]
+  }
+}
+{% endschema %}

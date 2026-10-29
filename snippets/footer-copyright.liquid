@@ -1,0 +1,16 @@
+{% capture powered_by_link %}{% endcapture %}
+{%- assign bottom_menu = section.settings.bottom_menu -%}
+
+<div class="footer-copyright">
+  <div class="footer-copyright__content">
+    <span class="footer-copyright__copy">© Copyright 2026 Sumitomo Rubber Industries, Ltd.</span>
+  </div>
+
+  {%- if bottom_menu != blank and linklists[bottom_menu].links.size > 0 -%}
+    <div class="footer-copyright__menu">
+      {% for link in linklists[bottom_menu].links %}
+        <a href="{{ link.url }}" class="footer-copyright__link">{{ link.title | strip_html | escape }}</a>
+      {% endfor %}
+    </div>
+  {%- endif -%}
+</div>

@@ -1,0 +1,57 @@
+{%- liquid
+  assign current_brand = ""
+  assign brand_color = ""
+  assign brand_font_color = ""
+
+  for brand in shop.metaobjects.brand.values
+    assign handle = brand.brand_handle.value | handleize
+    if request.path contains handle
+      assign current_brand = handle
+      assign brand_color = brand.background_color.value
+      assign brand_font_color = brand.font_color.value
+      break
+    endif
+  endfor
+
+  if current_brand == ""
+    assign current_brand = "dunlop"
+    assign brand_color = "#000000"
+    assign brand_font_color = "#ffffff"
+  endif
+
+  assign brand_class = 'brand-' | append: current_brand
+-%}
+
+{%- if linklists['brand-switcher'].links.size > 0 -%}
+  <nav class="brand-switcher" aria-label="Brand navigation" style="background-color: {{ brand_color }}; color: {{ brand_font_color }};">
+    <ul class="brand-switcher__list">
+      {%- for link in linklists['brand-switcher'].links -%}
+        {%- assign link_handle = link.title | handleize -%}
+        {%- assign is_active = false -%}
+        {%- if brand_class contains link_handle -%}
+          {%- assign is_active = true -%}
+        {%- endif -%}
+        <li class="brand-switcher__item{% if is_active %} brand-switcher__item--active{% endif %}"{% if is_active %} style="--item-bg: {{ brand_color | color_darken: 15 }}; --item-text: {{ brand_font_color }};"{% endif %}>
+          <a href="{{ link.url }}" class="brand-switcher__link" style="color: {{ brand_font_color }};">
+            {{- link.title -}}
+          </a>
+        </li>
+      {%- endfor -%}
+    </ul>
+  </nav>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Brand Switcher",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Displays the brand navigation bar. Order this section above the Announcement Bar in the Header group."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

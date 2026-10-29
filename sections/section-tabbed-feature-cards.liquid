@@ -1,0 +1,1140 @@
+{%- liquid
+  assign id = 'TabbedFeatureCards--' | append: section.id
+  assign selector_id = '#' | append: id
+  assign color_scheme = 'color-' | append: section.settings.color_scheme
+  assign section_width = section.settings.width
+  assign columns = section.settings.columns | plus: 0
+  assign columns_tablet = columns | at_most: 2
+  assign mobile_layout = section.settings.mobile_layout
+  assign image_ratio = section.settings.image_ratio
+  assign card_gap = section.settings.card_gap
+  assign card_padding = section.settings.card_padding
+  assign card_radius = section.settings.card_radius
+  assign heading_size = section.settings.heading_size | times: 0.01
+  assign text_size = section.settings.text_size | times: 0.01
+  assign card_bg = section.settings.card_bg_color
+  assign card_text = section.settings.card_text_color
+  assign card_border = section.settings.card_border_color
+  assign title_size = section.settings.title_size
+  assign desc_size = section.settings.description_size
+  assign tab_align = section.settings.tab_alignment
+
+  assign heading_color = card_text
+  if section.settings.heading_color != blank and section.settings.heading_color.alpha != 0.0
+    assign heading_color = section.settings.heading_color
+  endif
+  assign body_color = card_text
+  if section.settings.body_text_color != blank and section.settings.body_text_color.alpha != 0.0
+    assign body_color = section.settings.body_text_color
+  endif
+  assign cta_color = card_text
+  if section.settings.cta_color != blank and section.settings.cta_color.alpha != 0.0
+    assign cta_color = section.settings.cta_color
+  endif
+  assign spec_value_color = card_text
+  if section.settings.spec_value_color != blank and section.settings.spec_value_color.alpha != 0.0
+    assign spec_value_color = section.settings.spec_value_color
+  endif
+  assign subheading_color = section.settings.subheading_color
+  assign spec_label_color = section.settings.spec_label_color
+  assign label_color = section.settings.label_color
+  assign desktop_vw = 100 | divided_by: columns
+  capture card_sizes
+    echo '(min-width: 1024px) ' | append: desktop_vw | append: 'vw, (min-width: 768px) 50vw, 85vw'
+  endcapture
+
+  assign ratio_css = '4 / 3'
+  case image_ratio
+    when 'landscape'
+      assign ratio_css = '4 / 3'
+    when 'wide'
+      assign ratio_css = '16 / 9'
+    when 'square'
+      assign ratio_css = '1 / 1'
+    when 'portrait'
+      assign ratio_css = '3 / 4'
+  endcase
+
+  assign tabs_justify = 'center'
+  if tab_align == 'left'
+    assign tabs_justify = 'flex-start'
+  endif
+
+  assign visible_tabs_raw = ''
+  for i in (1..3)
+    assign label_key = 'tab_' | append: i | append: '_label'
+    if section.settings[label_key] != blank
+      assign visible_tabs_raw = visible_tabs_raw | append: i | append: ','
+    endif
+  endfor
+  assign visible_tabs = visible_tabs_raw | split: ','
+-%}
+
+{%- style -%}
+  {{ selector_id }} {
+    --PT: {{ section.settings.padding_top }}px;
+    --PB: {{ section.settings.padding_bottom }}px;
+    --cards-gap: {{ card_gap }}px;
+    --cards-columns: {{ columns }};
+    --cards-columns-tablet: {{ columns_tablet }};
+    --card-padding: {{ card_padding }}px;
+    --card-radius: {{ card_radius }}px;
+    --card-image-ratio: {{ ratio_css }};
+    --card-heading-size: {{ heading_size }};
+    --card-text-size: {{ text_size }};
+    --card-bg: {{ card_bg }};
+    --card-text: {{ card_text }};
+    --card-border: {{ card_border }};
+    --card-heading-color: {{ heading_color }};
+    --card-subheading-color: {{ subheading_color }};
+    --card-body-color: {{ body_color }};
+    --card-label-color: {{ label_color }};
+    --card-cta-color: {{ cta_color }};
+    --card-spec-label: {{ spec_label_color }};
+    --card-spec-value: {{ spec_value_color }};
+    --tab-accent: {{ section.settings.tab_accent_color }};
+    --tab-active: {{ section.settings.tab_active_color }};
+    --tab-inactive: {{ section.settings.tab_inactive_color }};
+    --tab-line: {{ section.settings.tab_line_color }};
+    --tabs-justify: {{ tabs_justify }};
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  {{ selector_id }} .tfc__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px 48px;
+    margin-bottom: 32px;
+  }
+
+  {{ selector_id }} .tfc__heading {
+    margin: 0;
+    font-family: var(--FONT-STACK-HEADING, inherit);
+    font-size: {{ title_size }}px;
+    font-weight: 700;
+    line-height: 0.98;
+    letter-spacing: -0.01em;
+    text-transform: none;
+    color: var(--text);
+  }
+
+  {{ selector_id }} .tfc__description {
+    margin: 0 0 0 auto;
+    max-width: 540px;
+    font-size: {{ desc_size }}px;
+    line-height: 1.7;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+
+  {{ selector_id }} .tfc__tabs {
+    display: flex;
+    justify-content: var(--tabs-justify);
+    overflow-x: auto;
+    scrollbar-width: none;
+    border-bottom: 1px solid var(--tab-line);
+    margin-bottom: 24px;
+  }
+
+  {{ selector_id }} .tfc__tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  {{ selector_id }} .tfc__tab {
+    flex: 0 0 auto;
+    margin: 0 0 -1px;
+    padding: 14px 28px;
+    background: none;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--tab-inactive);
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+
+  {{ selector_id }} .tfc__tab:hover {
+    color: var(--tab-active);
+  }
+
+  {{ selector_id }} .tfc__tab.is-active {
+    color: var(--tab-active);
+    border-bottom-color: var(--tab-accent);
+  }
+
+  {{ selector_id }} .tfc__tab:focus-visible {
+    outline: 2px solid var(--tab-accent);
+    outline-offset: -2px;
+  }
+
+  {{ selector_id }} .tfc__panel[hidden] {
+    display: none;
+  }
+
+  {{ selector_id }} .tfc__empty {
+    padding: 40px 0;
+    text-align: center;
+    opacity: 0.6;
+  }
+
+  {{ selector_id }} .feature-cards__list {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--cards-gap);
+    align-items: stretch;
+  }
+
+  {{ selector_id }} .feature-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+    background: var(--card-bg);
+    color: var(--card-text);
+    border: 1px solid var(--card-border);
+    border-radius: var(--card-radius);
+  }
+
+  {{ selector_id }} .feature-card__image {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: var(--card-image-ratio);
+    background: rgba(0, 0, 0, 0.06);
+  }
+
+  {{ selector_id }} .feature-card__image img,
+  {{ selector_id }} .feature-card__image svg {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  {{ selector_id }} .feature-card__badges {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 6px;
+    pointer-events: none;
+  }
+
+  {{ selector_id }} .feature-card__badges--stacked {
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
+
+  {{ selector_id }} .feature-card__badges--split {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+  }
+
+  {{ selector_id }} .feature-card__badge {
+    display: inline-block;
+    padding: 6px 9px;
+    font-size: 0.5156rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  {{ selector_id }} .feature-card__content {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    padding: var(--card-padding);
+  }
+
+  {{ selector_id }} .feature-card__heading {
+    margin: 0 0 14px;
+    font-size: calc(0.8125rem * var(--card-heading-size));
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: 0.14em;
+    text-transform: none;
+    color: var(--card-heading-color);
+  }
+
+  {{ selector_id }} .feature-card__heading--with-sub {
+    margin-bottom: 8px;
+  }
+
+  {{ selector_id }} .feature-card__subheading {
+    margin: 0 0 14px;
+    font-size: calc(0.6875rem * var(--card-heading-size));
+    font-weight: 400;
+    line-height: 1.4;
+    letter-spacing: 0.14em;
+    text-transform: none;
+    color: var(--card-subheading-color);
+  }
+
+  {{ selector_id }} .feature-card__text {
+    font-size: calc(0.875rem * var(--card-text-size));
+    line-height: 1.7;
+    color: var(--card-body-color);
+  }
+
+  {{ selector_id }} .feature-card__text--has-bottom {
+    margin-bottom: 20px;
+  }
+
+  {{ selector_id }} .feature-card__text p {
+    margin: 0 0 1em;
+  }
+
+  {{ selector_id }} .feature-card__text p:last-child {
+    margin-bottom: 0;
+  }
+
+  {{ selector_id }} .feature-card__bottom {
+    margin-top: auto;
+  }
+
+  {{ selector_id }} .feature-card__specs {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  {{ selector_id }} .feature-card__spec {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 0;
+    padding: 7px 0;
+    border-top: 1px solid var(--card-border);
+    line-height: 1.4;
+  }
+
+  {{ selector_id }} .feature-card__spec-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--card-spec-label);
+  }
+
+  {{ selector_id }} .feature-card__spec-value {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    text-align: right;
+    color: var(--card-spec-value);
+  }
+
+  {{ selector_id }} .feature-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--card-border);
+  }
+
+  {{ selector_id }} .feature-card__label {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    line-height: 1.3;
+    color: var(--card-label-color);
+  }
+
+  {{ selector_id }} .feature-card__cta {
+    margin-left: auto;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.3;
+    white-space: nowrap;
+    text-decoration: none;
+    color: var(--card-cta-color);
+  }
+
+  {{ selector_id }} a.feature-card__cta:hover {
+    text-decoration: underline;
+  }
+
+  @media screen and (max-width: 767px) {
+    {{ selector_id }} .tfc__heading {
+      font-size: calc({{ title_size }}px * 0.7);
+    }
+
+    {{ selector_id }} .tfc__description {
+      margin-left: 0;
+    }
+
+    {{ selector_id }} .tfc__tabs {
+      justify-content: flex-start;
+    }
+
+    {{ selector_id }} .tfc__tab {
+      padding: 12px 18px;
+    }
+  }
+
+  {% if mobile_layout == 'slider' %}
+    @media screen and (max-width: 767px) {
+      {{ selector_id }} .feature-cards__list {
+        grid-template-columns: none;
+        grid-auto-flow: column;
+        grid-auto-columns: 85%;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+
+      {{ selector_id }} .feature-cards__list::-webkit-scrollbar {
+        display: none;
+      }
+
+      {{ selector_id }} .feature-card {
+        scroll-snap-align: start;
+      }
+    }
+  {% endif %}
+
+  @media screen and (min-width: 768px) {
+    {{ selector_id }} .feature-cards__list {
+      grid-template-columns: repeat(var(--cards-columns-tablet), minmax(0, 1fr));
+    }
+  }
+
+  @media screen and (min-width: 1024px) {
+    {{ selector_id }} .feature-cards__list {
+      grid-template-columns: repeat(var(--cards-columns), minmax(0, 1fr));
+    }
+  }
+{%- endstyle -%}
+
+<section
+  id="{{ id }}"
+  class="section-padding tabbed-feature-cards {{ color_scheme }}"
+  data-section-id="{{ section.id }}"
+  data-section-type="tabbed-feature-cards"
+>
+  <div class="{{ section_width }}">
+    {%- if section.settings.title != blank or section.settings.description != blank -%}
+      <div class="tfc__header">
+        {%- if section.settings.title != blank -%}
+          <h2 class="tfc__heading">{{ section.settings.title | escape | newline_to_br }}</h2>
+        {%- endif -%}
+        {%- if section.settings.description != blank -%}
+          <p class="tfc__description">{{ section.settings.description | escape }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- if visible_tabs.size > 0 -%}
+      <div class="tfc__tabs" role="tablist" aria-label="Categories">
+        {%- for tab_i in visible_tabs -%}
+          {%- assign label_key = 'tab_' | append: tab_i | append: '_label' -%}
+          <button
+            type="button"
+            role="tab"
+            id="{{ id }}-tab-{{ tab_i }}"
+            class="tfc__tab{% if forloop.first %} is-active{% endif %}"
+            aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+            aria-controls="{{ id }}-panel-{{ tab_i }}"
+            {% unless forloop.first %}tabindex="-1"{% endunless %}
+          >{{ section.settings[label_key] | escape }}</button>
+        {%- endfor -%}
+      </div>
+
+      {%- for tab_i in visible_tabs -%}
+        {%- assign panel_count = 0 -%}
+        <div
+          class="tfc__panel"
+          role="tabpanel"
+          id="{{ id }}-panel-{{ tab_i }}"
+          aria-labelledby="{{ id }}-tab-{{ tab_i }}"
+          {% unless forloop.first %}hidden{% endunless %}
+        >
+          <div class="feature-cards__list">
+            {%- for block in section.blocks -%}
+              {%- assign block_tab = block.settings.tab | default: '1' -%}
+              {%- if block_tab == tab_i -%}
+                {%- assign panel_count = panel_count | plus: 1 -%}
+                {%- liquid
+                  assign card_image = block.settings.image
+                  assign card_heading = block.settings.heading
+                  assign card_text_content = block.settings.text
+                  assign badge_text = block.settings.badge_text
+                  assign badge_2_text = block.settings.badge_2_text
+                  assign badge_layout = block.settings.badge_layout | default: 'row'
+                  assign card_subheading = block.settings.subheading
+                  assign label_text = block.settings.footer_label
+                  assign cta_text = block.settings.cta_text
+                  assign cta_link = block.settings.cta_link
+
+                  assign has_badges = false
+                  if badge_text != blank or badge_2_text != blank
+                    assign has_badges = true
+                  endif
+
+                  assign has_specs = false
+                  for n in (1..3)
+                    assign sl_key = 'spec_' | append: n | append: '_label'
+                    assign sv_key = 'spec_' | append: n | append: '_value'
+                    if block.settings[sl_key] != blank or block.settings[sv_key] != blank
+                      assign has_specs = true
+                    endif
+                  endfor
+
+                  assign has_footer = false
+                  if label_text != blank or cta_text != blank
+                    assign has_footer = true
+                  endif
+
+                  assign has_bottom = false
+                  if has_specs or has_footer
+                    assign has_bottom = true
+                  endif
+                -%}
+                <div class="feature-card" {{ block.shopify_attributes }}>
+                  <div class="feature-card__image">
+                    {%- if has_badges -%}
+                      <div class="feature-card__badges feature-card__badges--{{ badge_layout }}">
+                        {%- if badge_text != blank -%}
+                          <span class="feature-card__badge" style="background: {{ block.settings.badge_bg_color }}; color: {{ block.settings.badge_text_color }};">{{ badge_text | escape }}</span>
+                        {%- endif -%}
+                        {%- if badge_2_text != blank -%}
+                          <span class="feature-card__badge feature-card__badge--second" style="background: {{ block.settings.badge_2_bg_color }}; color: {{ block.settings.badge_2_text_color }};">{{ badge_2_text | escape }}</span>
+                        {%- endif -%}
+                      </div>
+                    {%- endif -%}
+
+                    {%- if card_image != blank -%}
+                      {{
+                        card_image
+                        | image_url: width: 1200
+                        | image_tag:
+                          widths: '400, 600, 800, 1000, 1200',
+                          sizes: card_sizes,
+                          loading: 'lazy',
+                          alt: card_image.alt
+                      }}
+                    {%- else -%}
+                      {{ 'lifestyle-1' | placeholder_svg_tag }}
+                    {%- endif -%}
+                  </div>
+
+                  {%- if card_heading != blank or card_subheading != blank or card_text_content != blank or has_bottom -%}
+                    <div class="feature-card__content">
+                      {%- if card_heading != blank -%}
+                        <h3 class="feature-card__heading h6{% if card_subheading != blank %} feature-card__heading--with-sub{% endif %}">{{ card_heading | escape }}</h3>
+                      {%- endif -%}
+
+                      {%- if card_subheading != blank -%}
+                        <p class="feature-card__subheading">{{ card_subheading | escape }}</p>
+                      {%- endif -%}
+
+                      {%- if card_text_content != blank -%}
+                        <div class="feature-card__text rte{% if has_bottom %} feature-card__text--has-bottom{% endif %}">{{ card_text_content }}</div>
+                      {%- endif -%}
+
+                      {%- if has_bottom -%}
+                        <div class="feature-card__bottom">
+                          {%- if has_specs -%}
+                            <ul class="feature-card__specs">
+                              {%- for n in (1..3) -%}
+                                {%- assign sl_key = 'spec_' | append: n | append: '_label' -%}
+                                {%- assign sv_key = 'spec_' | append: n | append: '_value' -%}
+                                {%- if block.settings[sl_key] != blank or block.settings[sv_key] != blank -%}
+                                  <li class="feature-card__spec">
+                                    <span class="feature-card__spec-label">{{ block.settings[sl_key] | escape }}</span>
+                                    <span class="feature-card__spec-value">{{ block.settings[sv_key] | escape }}</span>
+                                  </li>
+                                {%- endif -%}
+                              {%- endfor -%}
+                            </ul>
+                          {%- endif -%}
+
+                          {%- if has_footer -%}
+                            <div class="feature-card__footer">
+                              {%- if label_text != blank -%}
+                                <span class="feature-card__label">{{ label_text | escape }}</span>
+                              {%- endif -%}
+
+                              {%- if cta_text != blank -%}
+                                {%- if cta_link != blank -%}
+                                  <a class="feature-card__cta" href="{{ cta_link }}">{{ cta_text | escape }} <span aria-hidden="true">&rarr;</span></a>
+                                {%- else -%}
+                                  <span class="feature-card__cta">{{ cta_text | escape }} <span aria-hidden="true">&rarr;</span></span>
+                                {%- endif -%}
+                              {%- endif -%}
+                            </div>
+                          {%- endif -%}
+                        </div>
+                      {%- endif -%}
+                    </div>
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+
+          {%- if panel_count == 0 and request.design_mode -%}
+            <p class="tfc__empty">No cards in this tab yet. Add a card and set its "Show in tab" option.</p>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    {%- else -%}
+      {%- if request.design_mode -%}
+        <p class="tfc__empty">Add at least one tab name in the section settings.</p>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+</section>
+
+<script>
+  (function () {
+    var root = document.getElementById('{{ id }}');
+    if (!root) return;
+    var tabs = Array.prototype.slice.call(root.querySelectorAll('[role="tab"]'));
+    var panels = Array.prototype.slice.call(root.querySelectorAll('[role="tabpanel"]'));
+    if (!tabs.length) return;
+
+    function select(index, focus) {
+      tabs.forEach(function (tab, i) {
+        var active = i === index;
+        tab.classList.toggle('is-active', active);
+        tab.setAttribute('aria-selected', active ? 'true' : 'false');
+        tab.tabIndex = active ? 0 : -1;
+        if (panels[i]) panels[i].hidden = !active;
+      });
+      if (focus) tabs[index].focus();
+    }
+
+    tabs.forEach(function (tab, i) {
+      tab.addEventListener('click', function () {
+        select(i, false);
+      });
+      tab.addEventListener('keydown', function (event) {
+        var last = tabs.length - 1;
+        var next = null;
+        if (event.key === 'ArrowRight') next = i === last ? 0 : i + 1;
+        if (event.key === 'ArrowLeft') next = i === 0 ? last : i - 1;
+        if (event.key === 'Home') next = 0;
+        if (event.key === 'End') next = last;
+        if (next !== null) {
+          event.preventDefault();
+          select(next, true);
+        }
+      });
+    });
+
+    document.addEventListener('shopify:block:select', function (event) {
+      if (!root.contains(event.target)) return;
+      var panel = event.target.closest('[role="tabpanel"]');
+      var index = panels.indexOf(panel);
+      if (index > -1) select(index, false);
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Tabbed feature cards",
+  "max_blocks": 30,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "textarea",
+      "id": "title",
+      "label": "Heading",
+      "info": "Press Enter for a second line.",
+      "default": "Find your model"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Heading font size",
+      "min": 24,
+      "max": 96,
+      "step": 2,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "info": "Shows on the right of the heading in small uppercase text."
+    },
+    {
+      "type": "range",
+      "id": "description_size",
+      "label": "Description font size",
+      "min": 9,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 11
+    },
+    {
+      "type": "header",
+      "content": "Tabs"
+    },
+    {
+      "type": "paragraph",
+      "content": "Name up to 3 tabs. Leave a name empty to hide that tab. On each card, choose which tab it appears in."
+    },
+    {
+      "type": "text",
+      "id": "tab_1_label",
+      "label": "Tab 1 name",
+      "default": "Drivers"
+    },
+    {
+      "type": "text",
+      "id": "tab_2_label",
+      "label": "Tab 2 name",
+      "default": "Fairway Woods"
+    },
+    {
+      "type": "text",
+      "id": "tab_3_label",
+      "label": "Tab 3 name",
+      "default": "Hybrids"
+    },
+    {
+      "type": "select",
+      "id": "tab_alignment",
+      "label": "Tab alignment",
+      "default": "center",
+      "options": [
+        { "value": "center", "label": "Center" },
+        { "value": "left", "label": "Left" }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "tab_accent_color",
+      "label": "Active tab underline",
+      "default": "#e8112d"
+    },
+    {
+      "type": "color",
+      "id": "tab_active_color",
+      "label": "Active tab text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "tab_inactive_color",
+      "label": "Inactive tab text",
+      "default": "#b5b5b5"
+    },
+    {
+      "type": "color",
+      "id": "tab_line_color",
+      "label": "Line under tabs",
+      "default": "#d9d9d9"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "Cards per row on desktop",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3,
+      "info": "Tablet shows 2 per row."
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Mobile layout",
+      "default": "stacked",
+      "options": [
+        { "value": "stacked", "label": "Stacked" },
+        { "value": "slider", "label": "Swipe slider" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "label": "Space between cards",
+      "min": 8,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Cards"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image shape",
+      "default": "landscape",
+      "options": [
+        { "value": "landscape", "label": "Landscape (4:3)" },
+        { "value": "wide", "label": "Wide (16:9)" },
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "portrait", "label": "Portrait (3:4)" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "card_padding",
+      "label": "Text padding",
+      "min": 12,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 22
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Card heading size",
+      "min": 75,
+      "max": 200,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "label": "Card text size",
+      "min": 75,
+      "max": 150,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Section color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "color",
+      "id": "card_bg_color",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_text_color",
+      "label": "Card text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "card_border_color",
+      "label": "Card border and divider lines",
+      "default": "#e3e3e3"
+    },
+    {
+      "type": "header",
+      "content": "Card text colors"
+    },
+    {
+      "type": "paragraph",
+      "content": "Leave a color empty to use the Card text color above."
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading"
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Subheading",
+      "default": "#e8112d"
+    },
+    {
+      "type": "color",
+      "id": "body_text_color",
+      "label": "Body text",
+      "default": "#6b6b6b"
+    },
+    {
+      "type": "color",
+      "id": "spec_label_color",
+      "label": "Detail row labels",
+      "default": "#8a8a8a"
+    },
+    {
+      "type": "color",
+      "id": "spec_value_color",
+      "label": "Detail row values"
+    },
+    {
+      "type": "color",
+      "id": "label_color",
+      "label": "Footer label (bottom left)",
+      "default": "#8a8a8a"
+    },
+    {
+      "type": "color",
+      "id": "cta_color",
+      "label": "Call to action link"
+    },
+    {
+      "type": "header",
+      "content": "Section spacing"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "default": "wrapper--full-padded",
+      "options": [
+        { "value": "wrapper--full-padded", "label": "Full width padded" },
+        { "value": "wrapper", "label": "Page width" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Card",
+      "settings": [
+        {
+          "type": "select",
+          "id": "tab",
+          "label": "Show in tab",
+          "info": "Tab names are set in the section settings.",
+          "default": "1",
+          "options": [
+            { "value": "1", "label": "Tab 1" },
+            { "value": "2", "label": "Tab 2" },
+            { "value": "3", "label": "Tab 3" }
+          ]
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "header",
+          "content": "Badge 1"
+        },
+        {
+          "type": "text",
+          "id": "badge_text",
+          "label": "Badge text",
+          "info": "Shows in the top left of the image. Leave empty for no badge."
+        },
+        {
+          "type": "color",
+          "id": "badge_bg_color",
+          "label": "Badge color",
+          "default": "#e8112d"
+        },
+        {
+          "type": "color",
+          "id": "badge_text_color",
+          "label": "Badge text color",
+          "default": "#ffffff"
+        },
+        {
+          "type": "header",
+          "content": "Badge 2"
+        },
+        {
+          "type": "text",
+          "id": "badge_2_text",
+          "label": "Second badge text",
+          "info": "Optional. Leave empty to show only one badge."
+        },
+        {
+          "type": "color",
+          "id": "badge_2_bg_color",
+          "label": "Second badge color",
+          "default": "#ffffff"
+        },
+        {
+          "type": "color",
+          "id": "badge_2_text_color",
+          "label": "Second badge text color",
+          "default": "#000000"
+        },
+        {
+          "type": "select",
+          "id": "badge_layout",
+          "label": "Badge arrangement",
+          "default": "row",
+          "options": [
+            { "value": "row", "label": "Side by side (top left)" },
+            { "value": "stacked", "label": "Stacked (top left)" },
+            { "value": "split", "label": "Split (one left, one right)" }
+          ]
+        },
+        {
+          "type": "header",
+          "content": "Text"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Card heading"
+        },
+        {
+          "type": "text",
+          "id": "subheading",
+          "label": "Subheading",
+          "info": "Optional line under the heading, e.g. a tagline."
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "<p>Use this space to describe the feature or product detail.</p>"
+        },
+        {
+          "type": "header",
+          "content": "Detail row 1"
+        },
+        {
+          "type": "text",
+          "id": "spec_1_label",
+          "label": "Label",
+          "info": "e.g. Lofts. Leave both fields empty to hide the row."
+        },
+        {
+          "type": "text",
+          "id": "spec_1_value",
+          "label": "Value",
+          "info": "e.g. 9.0° / 10.5°"
+        },
+        {
+          "type": "header",
+          "content": "Detail row 2"
+        },
+        {
+          "type": "text",
+          "id": "spec_2_label",
+          "label": "Label",
+          "info": "e.g. Head"
+        },
+        {
+          "type": "text",
+          "id": "spec_2_value",
+          "label": "Value",
+          "info": "e.g. 460cc"
+        },
+        {
+          "type": "header",
+          "content": "Detail row 3"
+        },
+        {
+          "type": "text",
+          "id": "spec_3_label",
+          "label": "Label",
+          "info": "e.g. Weighting"
+        },
+        {
+          "type": "text",
+          "id": "spec_3_value",
+          "label": "Value",
+          "info": "e.g. Heel + Toe"
+        },
+        {
+          "type": "header",
+          "content": "Footer"
+        },
+        {
+          "type": "text",
+          "id": "footer_label",
+          "label": "Footer label",
+          "info": "Optional small text on the bottom left."
+        },
+        {
+          "type": "text",
+          "id": "cta_text",
+          "label": "Call to action text",
+          "info": "e.g. Shop ZXi RKT. Leave empty for no link."
+        },
+        {
+          "type": "url",
+          "id": "cta_link",
+          "label": "Call to action link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Tabbed feature cards",
+      "category": "Image",
+      "blocks": [
+        { "type": "card" },
+        { "type": "card" },
+        { "type": "card" }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "aside", "footer"]
+  }
+}
+{% endschema %}

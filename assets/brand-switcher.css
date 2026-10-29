@@ -1,0 +1,83 @@
+/* Brand Switcher — Desktop bar
+   ================================================== */
+
+.brand-switcher {
+  /* background and color set inline via Liquid */
+}
+
+.brand-switcher__list {
+  display: flex;
+  align-items: stretch;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.brand-switcher__item {
+  position: relative;
+  margin-bottom:0px;
+}
+
+.brand-switcher__link {
+  display: block;
+  padding: 10px 18px;
+  text-decoration: none;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  opacity: 0.65;
+  transition: opacity 0.2s ease;
+  white-space: nowrap;
+}
+
+.brand-switcher__link:hover {
+  opacity: 1;
+}
+
+.brand-switcher__item--active {
+  background-color: var(--item-bg);
+}
+
+.brand-switcher__item--active .brand-switcher__link {
+  opacity: 1;
+  font-weight: bold;
+  color: var(--item-text) !important;
+}
+
+/* Hide desktop bar on mobile */
+@media screen and (max-width: 768px) {
+  .brand-switcher {
+    display: none;
+  }
+}
+
+
+/* Brand Switcher — Mobile drawer
+   ================================================== */
+
+.brand-switcher--mobile {
+  background-color: var(--brand-bg, #000);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.brand-switcher--mobile .mobile-navlink,
+.brand-switcher--mobile .mobile-nav__trigger,
+.brand-switcher--mobile .brand-switcher__active-label {
+  color: var(--brand-text, #fff) !important;
+}
+
+.brand-switcher--mobile .mobile-navlink--level-2 {
+  opacity: 0.75;
+}
+
+.brand-switcher--mobile .mobile-navlink--level-2:hover {
+  opacity: 1;
+}
+
+.brand-switcher--mobile .mobile-nav__trigger svg {
+  fill: var(--brand-text, #fff);
+}
+
+.brand-switcher--mobile .mobile-dropdown {
+  background-color: var(--brand-bg, #000);
+}

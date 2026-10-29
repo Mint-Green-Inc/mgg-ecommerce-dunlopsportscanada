@@ -1,0 +1,171 @@
+{%- comment -%}
+  Renders one table from a metaobject that has a "rows" list.
+  Columns are picked automatically: a column shows only if at least one row has a value for it.
+
+  Params:
+    group      - the table metaobject (has .rows, and optionally .title / .shaft / .grip / .image / .footnote)
+    kind       - 'specs' | 'shafts' | 'grip' (decides which columns are considered)
+    wrap       - true to render inside a titled group with optional side image
+    show_title - true to show the group's title (only used when wrap is true)
+{%- endcomment -%}
+
+{%- liquid
+  assign rows = group.rows.value
+  assign footnote = group.footnote.value
+
+  case kind
+    when 'shafts'
+      assign key_list = 'flex,weight,torque,tip_diameter,butt_diameter,launch,spin'
+    when 'grip'
+      assign key_list = 'size,core,weight'
+    else
+      assign key_list = 'head,model,loft,grind,bounce,grooves,hand,lie,offset,volume,length,steel_s_flex,steel_r_flex,graphite_s_flex,graphite_r_flex,graphite_a_flex,swing_weight,sw,club_weight'
+  endcase
+  assign all_keys = key_list | split: ','
+
+  assign has_head = false
+  for row in rows
+    if row.head.value != blank
+      assign has_head = true
+      break
+    endif
+  endfor
+
+  assign visible = ''
+  for key in all_keys
+    if key == 'model' and has_head
+      continue
+    endif
+    for row in rows
+      if row[key].value != blank
+        assign visible = visible | append: key | append: ','
+        break
+      endif
+    endfor
+  endfor
+  assign visible_keys = visible | split: ','
+
+  assign group_title = group.title.value | default: group.shaft.value | default: group.grip.value
+-%}
+
+{%- if visible_keys.size > 0 -%}
+  {%- capture table_html -%}
+    <div class="product-tables__scroll">
+      <table class="product-tables__table">
+        <thead>
+          <tr>
+            {%- for key in visible_keys -%}
+              {%- liquid
+                case key
+                  when 'head'
+                    assign label = 'Head'
+                  when 'model'
+                    assign label = 'Model'
+                  when 'loft'
+                    assign label = 'Loft'
+                  when 'grind'
+                    assign label = 'Grind'
+                  when 'bounce'
+                    assign label = 'Bounce'
+                  when 'grooves'
+                    assign label = 'Grooves'
+                  when 'hand'
+                    assign label = 'Hand'
+                  when 'lie'
+                    assign label = 'Lie'
+                  when 'offset'
+                    assign label = 'Offset'
+                  when 'volume'
+                    assign label = 'Volume'
+                  when 'length'
+                    if footnote contains '*'
+                      assign label = 'Length*'
+                    else
+                      assign label = 'Length'
+                    endif
+                  when 'steel_s_flex'
+                    assign label = 'Steel S Flex'
+                  when 'steel_r_flex'
+                    assign label = 'Steel R Flex'
+                  when 'graphite_s_flex'
+                    assign label = 'Graphite S Flex'
+                  when 'graphite_r_flex'
+                    assign label = 'Graphite R Flex'
+                  when 'graphite_a_flex'
+                    assign label = 'Graphite A Flex'
+                  when 'swing_weight'
+                    assign label = 'Swing Weight'
+                  when 'sw'
+                    assign label = 'SW'
+                  when 'club_weight'
+                    assign label = 'Club Weight'
+                  when 'flex'
+                    assign label = 'Flex'
+                  when 'weight'
+                    assign label = 'Weight'
+                  when 'torque'
+                    assign label = 'Torque'
+                  when 'tip_diameter'
+                    assign label = 'Tip Diameter'
+                  when 'butt_diameter'
+                    assign label = 'Butt Diameter'
+                  when 'launch'
+                    assign label = 'Launch'
+                  when 'spin'
+                    assign label = 'Spin'
+                  when 'size'
+                    assign label = 'Size'
+                  when 'core'
+                    assign label = 'Core'
+                  else
+                    assign label = key | replace: '_', ' ' | capitalize
+                endcase
+              -%}
+              <th>{{ label }}</th>
+            {%- endfor -%}
+          </tr>
+        </thead>
+        <tbody>
+          {%- for row in rows -%}
+            <tr>
+              {%- for key in visible_keys -%}
+                <td>{{ row[key].value }}</td>
+              {%- endfor -%}
+            </tr>
+          {%- endfor -%}
+        </tbody>
+      </table>
+    </div>
+  {%- endcapture -%}
+
+  {%- if wrap -%}
+    <div class="product-tables__group">
+      <div class="product-tables__group-main">
+        {%- if show_title and group_title != blank -%}
+          <h3 class="product-tables__group-title">{{ group_title }}</h3>
+        {%- endif -%}
+        {{ table_html }}
+        {%- if footnote != blank and group.image.value == blank -%}
+          <p class="product-tables__disclaimer">{{ footnote }}</p>
+        {%- endif -%}
+      </div>
+      {%- if group.image.value != blank -%}
+        <div class="product-tables__group-media">
+          {{
+            group.image.value
+            | image_url: width: 800
+            | image_tag: loading: 'lazy', widths: '400,600,800', class: 'product-tables__group-image'
+          }}
+          {%- if footnote != blank -%}
+            <p class="product-tables__caption">{{ footnote }}</p>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+  {%- else -%}
+    {{ table_html }}
+    {%- if footnote != blank -%}
+      <p class="product-tables__disclaimer">{{ footnote }}</p>
+    {%- endif -%}
+  {%- endif -%}
+{%- endif -%}

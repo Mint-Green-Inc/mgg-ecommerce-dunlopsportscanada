@@ -1,0 +1,616 @@
+<!-- /sections/testimonials.liquid -->
+
+{%- render 'testimonials' -%}
+
+{%- if section.settings.use_custom_card_style -%}
+  {%- liquid
+    assign cs_border_width = section.settings.card_border_width
+    assign cs_border_color = section.settings.card_border_color
+    assign cs_radius = section.settings.card_border_radius
+    assign cs_padding = section.settings.card_padding
+    assign cs_gap = section.settings.card_gap
+    assign cs_h_font = section.settings.card_heading_font
+    assign cs_h_size = section.settings.card_heading_size
+    assign cs_h_weight = section.settings.card_heading_weight
+    assign cs_h_spacing = section.settings.card_heading_spacing | divided_by: 100.0
+    assign cs_h_color = section.settings.card_heading_color
+    assign cs_h_gap = section.settings.card_heading_gap
+    assign cs_b_size = section.settings.card_body_size
+    assign cs_b_color = section.settings.card_body_color
+    assign cs_b_weight = section.settings.card_body_weight
+    assign cs_b_spacing = section.settings.card_body_spacing | divided_by: 100.0
+    assign cs_b_line = section.settings.card_body_line_height | divided_by: 100.0
+
+    assign cs_h_stack = 'var(--FONT-STACK-BODY, inherit)'
+    if cs_h_font == 'heading'
+      assign cs_h_stack = 'var(--FONT-STACK-HEADING, inherit)'
+    elsif cs_h_font == 'subheading'
+      assign cs_h_stack = 'var(--FONT-STACK-SUBHEADING, var(--FONT-STACK-HEADING, inherit))'
+    endif
+  -%}
+
+  {%- style -%}
+    [data-section-id="{{ section.id }}"] {
+      --grid-gutter: {{ cs_gap }}px;
+    }
+    [data-section-id="{{ section.id }}"] .testimonial__item__inner {
+      padding: {{ cs_padding }}px;
+      border-radius: {{ cs_radius }}px;
+    }
+    [data-section-id="{{ section.id }}"] .testimonial__item--border .testimonial__item__inner {
+      border: {{ cs_border_width }}px solid {{ cs_border_color }};
+    }
+    [data-section-id="{{ section.id }}"] .testimonial__item .testimonial__heading {
+      font-family: {{ cs_h_stack }};
+      font-size: {{ cs_h_size }}px;
+      font-weight: {{ cs_h_weight }};
+      letter-spacing: {{ cs_h_spacing }}em;
+      text-transform: {% if section.settings.card_heading_uppercase %}uppercase{% else %}none{% endif %};
+      line-height: 1.3;
+      margin-bottom: {{ cs_h_gap }}px;
+      {%- if cs_h_color != blank %}
+      color: {{ cs_h_color }};
+      {%- endif %}
+    }
+    [data-section-id="{{ section.id }}"] .testimonial__item .testimonial__text,
+    [data-section-id="{{ section.id }}"] .testimonial__item .testimonial__text p {
+      color: {{ cs_b_color }};
+      font-size: {{ cs_b_size }}px;
+      font-weight: {{ cs_b_weight }};
+      letter-spacing: {{ cs_b_spacing }}em;
+      line-height: {{ cs_b_line }};
+    }
+  {%- endstyle -%}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Testimonials",
+  "settings": [
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "range",
+      "id": "subheading_size",
+      "label": "Subheading size",
+      "default": 100,
+      "min": 100,
+      "max": 200,
+      "step": 5,
+      "unit": "%"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Testimonials"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size",
+      "default": 100,
+      "min": 100,
+      "max": 200,
+      "step": 5,
+      "unit": "%"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text alignment",
+      "default": "text-left",
+      "options": [
+        {"label": "Center", "value": "text-center"},
+        {"label": "Left", "value": "text-left"}
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Autoplay"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_autoplay",
+      "label": "Enable autoplay",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "visible_if": "{{ section.settings.enable_autoplay }}",
+      "label": "Autoplay speed",
+      "min": 50,
+      "max": 300,
+      "step": 10,
+      "unit": "%",
+      "default": 100,
+      "info": "Higher values = faster animation"
+    },
+    {
+      "type": "select",
+      "id": "direction",
+      "visible_if": "{{ section.settings.enable_autoplay }}",
+      "label": "Autoplay direction",
+      "default": "ticker-ltr",
+      "options": [
+        {"value": "ticker-ltr", "label": "Left to right"},
+        {"value": "ticker-rtl", "label": "Right to left"}
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "color",
+      "id": "testimonial_block_color",
+      "label": "Block background",
+      "alpha": true
+    },
+    {
+      "type": "color",
+      "id": "star_color",
+      "label": "Star color",
+      "alpha": true
+    },
+    {
+      "type": "header",
+      "content": "Card style"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_custom_card_style",
+      "label": "Use custom card style",
+      "info": "Turn on to apply the card, heading and body options below. Off keeps the theme default look.",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "card_border_width",
+      "visible_if": "{{ section.settings.use_custom_card_style }}",
+      "label": "Border thickness",
+      "info": "Only shows on blocks with 'Enable border' checked",
+      "min": 0,
+      "max": 6,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "color",
+      "id": "card_border_color",
+      "visible_if": "{{ section.settings.use_custom_card_style }}",
+      "label": "Border color",
+      "default": "#e3e3e3"
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "visible_if": "{{ section.settings.use_custom_card_style }}",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "card_padding",
+      "visible_if": "{{ section.settings.use_custom_card_style }}",
+      "label": "Card padding",
+      "min": 12,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 26
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "visible_if": "{{ section.settings.use_custom_card_style }}",
+      "label": "Gap between cards",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "header",
+      "content": "Card heading text"
+    },
+    {
+      "type": "select",
+      "id": "card_heading_font",
+      "visible_if": "{{ section.settings.use_custom_card_style }}",
+      "label": "Heading font",
+      "default": "subheading",
+      "options": [
+        {"value": "body", "label": "Body font"},
+        {"value": "heading", "label": "Heading font"},
+        {"value": "subheading", "label": "Subheading font"}
+      ]
+    },
+    {
+      "type": "range",
+      "id": "card_heading_size",
+      "visible_if": "{{ section.settings.use_custom_card_style }}",
+      "label": "Heading font size",
+      "info": "Overrides the per-block heading size while custom style is on",
+      "min": 10,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "card_heading_weight",
+      "visible_if": "{{ section.settings.use_custom_card_style }}",
+      "label": "Heading weight",
+      "default": "600",
+      "options": [
+        {"value": "400", "label": "Regular"},
+        {"value": "500", "label": "Medium"},
+        {"value": "600", "label": "Semi-bold"},
+        {"value": "700", "label": "Bold"}
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "card_heading_uppercase",
+      "visible_if": "{{ section.settings.use_custom_card_style }}",
+      "label": "Uppercase heading",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "card_heading_spacing",
+      "visible_if": "{{ section.settings.use_custom_card_style }}",
+      "label": "Heading letter spacing",
+      "info": "In hundredths of an em (15 = 0.15em)",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "default": 15
+    },
+    {
+      "type": "color",
+      "id": "card_heading_color",
+      "visible_if": "{{ section.settings.use_custom_card_style }}",
+      "label": "Heading color",
+      "info": "Leave empty to use the color scheme text color"
+    },
+    {
+      "type": "range",
+      "id": "card_heading_gap",
+      "visible_if": "{{ section.settings.use_custom_card_style }}",
+      "label": "Space below heading",
+      "min": 4,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "header",
+      "content": "Card body text"
+    },
+    {
+      "type": "range",
+      "id": "card_body_size",
+      "visible_if": "{{ section.settings.use_custom_card_style }}",
+      "label": "Body font size",
+      "info": "Overrides the per-block text size while custom style is on",
+      "min": 10,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "card_body_color",
+      "visible_if": "{{ section.settings.use_custom_card_style }}",
+      "label": "Body text color",
+      "default": "#666666"
+    },
+    {
+      "type": "select",
+      "id": "card_body_weight",
+      "visible_if": "{{ section.settings.use_custom_card_style }}",
+      "label": "Body weight",
+      "default": "400",
+      "options": [
+        {"value": "300", "label": "Light"},
+        {"value": "400", "label": "Regular"},
+        {"value": "500", "label": "Medium"}
+      ]
+    },
+    {
+      "type": "range",
+      "id": "card_body_spacing",
+      "visible_if": "{{ section.settings.use_custom_card_style }}",
+      "label": "Body letter spacing",
+      "info": "In hundredths of an em (3 = 0.03em)",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "card_body_line_height",
+      "visible_if": "{{ section.settings.use_custom_card_style }}",
+      "label": "Body line height",
+      "min": 110,
+      "max": 220,
+      "step": 5,
+      "unit": "%",
+      "default": 165
+    },
+    {
+      "type": "header",
+      "content": "Section spacing"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "visible_if": "{{ section.settings.enable_autoplay == false }}",
+      "label": "Width",
+      "default": "wrapper--full-padded",
+      "options": [
+        {"value": "wrapper--full-padded", "label": "Full width padded"},
+        {"value": "wrapper", "label": "Page width"}
+      ]
+    },
+    {
+      "type": "select",
+      "id": "slider_width",
+      "visible_if": "{{ section.settings.enable_autoplay }}",
+      "label": "Width",
+      "default": "wrapper--full-padded",
+      "options": [
+        {"value": "wrapper--full", "label": "Full width"},
+        {"value": "wrapper--full-padded", "label": "Full width padded"},
+        {"value": "wrapper", "label": "Page width"}
+      ]
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 60
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Testimonial",
+      "settings": [
+        {
+          "type": "range",
+          "id": "star_rating",
+          "label": "Review star rating",
+          "min": 0,
+          "max": 5,
+          "step": 1,
+          "default": 5,
+          "info": "Set 0 to hide stars"
+        },
+        {
+          "type": "checkbox",
+          "id": "enable_border",
+          "label": "Enable border",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Love it!"
+        },
+        {
+          "type": "range",
+          "id": "text_size",
+          "label": "Heading size",
+          "default": 125,
+          "min": 100,
+          "max": 200,
+          "step": 5,
+          "unit": "%"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Testimonial",
+          "default": "<p>Excellent customer service. I love their products!</p>"
+        },
+        {
+          "type": "range",
+          "id": "content_size",
+          "label": "Text size",
+          "default": 100,
+          "min": 75,
+          "max": 175,
+          "step": 5,
+          "unit": "%"
+        },
+        {
+          "type": "text",
+          "id": "customer_name",
+          "label": "Customer name",
+          "default": "John Edmonson"
+        },
+        {
+          "type": "richtext",
+          "id": "subheading",
+          "label": "Text",
+          "default": "<p>Loyal Customer</p>"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "Text",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "range",
+          "id": "star_rating",
+          "label": "Review star rating",
+          "min": 0,
+          "max": 5,
+          "step": 1,
+          "default": 5,
+          "info": "Set 0 to hide stars"
+        },
+        {
+          "type": "checkbox",
+          "id": "enable_border",
+          "label": "Enable border",
+          "default": true
+        },
+        {
+          "type": "textarea",
+          "id": "heading",
+          "label": "Heading",
+          "default": "We let our reviews speak for themselves."
+        },
+        {
+          "type": "range",
+          "id": "text_size",
+          "label": "Heading size",
+          "default": 125,
+          "min": 100,
+          "max": 200,
+          "step": 5,
+          "unit": "%"
+        },
+        {
+          "type": "richtext",
+          "id": "subheading",
+          "label": "Text",
+          "default": "<p>4.98 average<br>213 reviews</p>"
+        },
+        {
+          "type": "color",
+          "id": "block_color",
+          "label": "Block color",
+          "default": "#000",
+          "alpha": true
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Text color",
+          "default": "#fff"
+        },
+        {
+          "type": "select",
+          "id": "text_alignment",
+          "label": "Text alignment",
+          "default": "text-left",
+          "options": [
+            {
+              "value": "text-center",
+              "label": "Center"
+            },
+            {
+              "value": "text-left",
+              "label": "Left"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonials",
+      "category": "Storytelling",
+      "blocks": [
+        {
+          "type": "text"
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "customer_name": "John Edmonson",
+            "text": "<p>Excellent customer service. I love their products!<\/p>",
+            "subheading": "<p>Happy customer</p>"
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "customer_name": "Lindsay Smith",
+            "text": "<p>Excellent customer service. I love their products!<\/p>",
+            "subheading": "<p>Los Angeles, CA</p>"
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "customer_name": "Eric Lopez",
+            "text": "<p>Excellent customer service. I love their products!<\/p>",
+            "subheading": "<p>12 days ago</p>"
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "customer_name": "Sandy Boone",
+            "text": "<p>Excellent customer service. I love their products!<\/p>",
+            "subheading": "<p>Verified customer</p>"
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "customer_name": "Dmitri Kristov",
+            "text": "<p>Excellent customer service. I love their products!<\/p>",
+            "subheading": "<p>Verified customer</p>"
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "customer_name": "Amelia Ngoy",
+            "text": "<p>Excellent customer service. I love their products!<\/p>",
+            "subheading": "<p>Verified customer</p>"
+          }
+        }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "aside", "footer"]
+  }
+}
+{% endschema %}

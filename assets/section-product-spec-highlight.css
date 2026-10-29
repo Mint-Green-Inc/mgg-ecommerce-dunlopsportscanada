@@ -1,0 +1,268 @@
+.spec-highlight-wrapper {
+  position: static;
+}
+
+.spec-highlight-container {
+  position: relative;
+  padding: 0 1.5rem;
+}
+
+[data-width="page"] .spec-highlight-container {
+  max-width: 120rem;
+  margin: 0 auto;
+}
+
+[data-width="full"] .spec-highlight-container {
+  max-width: none;
+}
+
+.spec-highlight-viewport {
+  overflow: hidden;
+}
+
+.spec-highlight-track {
+  display: flex;
+  gap: 2rem;
+}
+
+/* Stacked layout */
+[data-layout="stack"] .spec-highlight-viewport {
+  overflow: visible;
+}
+
+[data-layout="stack"] .spec-highlight-track {
+  flex-direction: column;
+  align-items: center;
+}
+
+[data-layout="stack"] .spec-highlight-card {
+  width: 100%;
+  max-width: 480px;
+}
+
+/* Carousel layout */
+[data-layout="carousel"] .spec-highlight-track {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 0 2px;
+}
+
+[data-layout="carousel"] .spec-highlight-track::-webkit-scrollbar {
+  display: none;
+}
+
+[data-layout="carousel"] .spec-highlight-card {
+  flex: 0 0 auto;
+  width: min(85%, 340px);
+  scroll-snap-align: start;
+}
+
+/* Card */
+.spec-highlight-card {
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgb(var(--color-background, 255, 255, 255));
+  border: 1px solid rgba(var(--color-foreground, 0, 0, 0), 0.08);
+}
+
+.spec-highlight-card__media {
+  background: var(--spec-highlight-bg, #000);
+  padding: 1.6rem;
+}
+
+.spec-highlight-card__image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.spec-highlight-card__content {
+  padding: 1.6rem 1.6rem 1.4rem;
+}
+
+.spec-highlight-card__heading {
+  font-size: var(--spec-highlight-heading-size, 2.2rem);
+  font-weight: 700;
+  margin: 0 0 0.4rem;
+}
+
+.spec-highlight-card__subheading {
+  font-size: var(--spec-highlight-subheading-size, 1.4rem);
+  color: rgba(var(--color-foreground, 0, 0, 0), 0.65);
+  margin: 0 0 1.4rem;
+}
+
+.spec-highlight-card__body {
+  font-size: var(--spec-highlight-text-size, 1.4rem);
+  line-height: 1.5;
+  margin-bottom: 1.2rem;
+  border-top: 1px solid rgba(var(--color-foreground, 0, 0, 0), 0.12);
+  padding-top: 1.2rem;
+}
+
+.spec-highlight-card__body p:last-child {
+  margin-bottom: 0;
+}
+
+.spec-highlight-card__rows {
+  margin: 0;
+  border-top: 1px solid rgba(var(--color-foreground, 0, 0, 0), 0.12);
+}
+
+.spec-highlight-card__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid rgba(var(--color-foreground, 0, 0, 0), 0.12);
+}
+
+.spec-highlight-card__row-label {
+  font-size: var(--spec-highlight-row-size, 1.4rem);
+  color: rgba(var(--color-foreground, 0, 0, 0), 0.75);
+  margin: 0;
+}
+
+.spec-highlight-card__row-value {
+  font-size: var(--spec-highlight-row-size, 1.4rem);
+  font-weight: 700;
+  text-align: right;
+  margin: 0;
+}
+
+.spec-highlight-card__row-value p {
+  margin: 0;
+}
+
+.spec-highlight-card__row-value--full {
+  text-align: left;
+  width: 100%;
+}
+
+/* Controls (arrows + dots, below the cards) */
+.spec-highlight-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+  margin-top: 1.6rem;
+}
+
+.spec-highlight-arrow {
+  position: static;
+  flex: 0 0 auto;
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 50%;
+  border: 1px solid rgba(var(--color-foreground, 0, 0, 0), 0.15);
+  background: rgb(var(--color-background, 255, 255, 255));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.spec-highlight-arrow:hover {
+  background: rgba(var(--color-foreground, 0, 0, 0), 0.05);
+}
+
+/* Dots */
+.spec-highlight-dots {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.spec-highlight-dot {
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 50%;
+  border: none;
+  background: rgba(var(--color-foreground, 0, 0, 0), 0.2);
+  padding: 0;
+  cursor: pointer;
+}
+
+.spec-highlight-dot.is-active {
+  background: rgba(var(--color-foreground, 0, 0, 0), 0.8);
+}
+
+/* ==========================================================
+   Carousel: fill the row when cards fit, and align card sections
+   ========================================================== */
+
+/* Desktop: cards share the available width instead of hugging the left.
+   They keep a 300px minimum, so with many cards the track still scrolls. */
+@media screen and (min-width: 750px) {
+  [data-layout="carousel"] .spec-highlight-card {
+    flex: 1 0 300px;
+    width: auto;
+  }
+}
+
+/* Equal-height cards with image / header / description / detail rows
+   lining up across every card (uses subgrid; older browsers fall back
+   to the flex layout above). */
+@supports (grid-template-rows: subgrid) {
+  [data-layout="carousel"] .spec-highlight-track {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: min(85%, 340px);
+    grid-template-rows: repeat(5, auto);
+    column-gap: 2rem;
+    row-gap: 0;
+  }
+
+  @media screen and (min-width: 750px) {
+    [data-layout="carousel"] .spec-highlight-track {
+      grid-auto-columns: minmax(300px, 1fr);
+    }
+  }
+
+  [data-layout="carousel"] .spec-highlight-card {
+    display: grid;
+    grid-row: 1 / span 5;
+    grid-template-rows: subgrid;
+    grid-template-columns: minmax(0, 1fr);
+    width: auto;
+  }
+
+  /* Let the card's children sit directly on the shared rows */
+  [data-layout="carousel"] .spec-highlight-card__content {
+    display: contents;
+  }
+
+  [data-layout="carousel"] .spec-highlight-card__media {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  [data-layout="carousel"] .spec-highlight-card__heading {
+    grid-column: 1;
+    grid-row: 2;
+    margin: 1.6rem 1.6rem 0.4rem;
+  }
+
+  [data-layout="carousel"] .spec-highlight-card__subheading {
+    grid-column: 1;
+    grid-row: 3;
+    margin: 0 1.6rem 1.4rem;
+  }
+
+  [data-layout="carousel"] .spec-highlight-card__body {
+    grid-column: 1;
+    grid-row: 4;
+    margin: 0 1.6rem 1.2rem;
+  }
+
+  [data-layout="carousel"] .spec-highlight-card__rows {
+    grid-column: 1;
+    grid-row: 5;
+    align-self: start;
+    margin: 0 1.6rem 1.4rem;
+  }
+}
